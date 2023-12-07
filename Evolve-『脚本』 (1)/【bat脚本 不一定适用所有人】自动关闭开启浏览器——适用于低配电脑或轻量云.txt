@@ -1,0 +1,34 @@
+@echo off
+
+echo Welcome to use 'KILL U!!!!'
+
+@REM 使用说明：将文件名改成.bat后缀，文件名最好全英文，随意是啥。点击即可享用
+
+@REM 背景：轻量云2G内存，有时候会莫名卡刷新，并且到后面浏览器会逐渐跑满内存，没有内存跑远程桌面，一觉醒来6、7个小时的加速 (悲！！！
+@REM 用的脚本有七八个，不清楚是否有内存溢出的情况，只会C、C艹不懂JAVA，懒得去优化，直接从根上噶他们腰子，桀桀桀
+@REM 使用情况：跑灌注脚本到九十多层，未用定期清除之前浏览器占内存1G多，使用后不到300Mb，需要更长期的测试，再说吧
+
+:loop_label
+@REM 获取当前分:秒
+set minute=%time:~3,2%
+set sec=%time:~6,2%
+
+@REM 查找浏览器存货进程， 其他浏览器  cmd执行tasklist查看 
+for /f %%i in ('tasklist^|find /c "chrome.exe"') do (set num=%%i)
+echo %exe% Thread chrome.exe num %num%
+
+@REM 判断逻辑，不存在进程，则开启一个新的；
+@REM 如果进程数大于0，则在时间大于59:48的时候kill所有进程，时间自定义跟 timeout 运行间隔有相关关
+if %num% EQU 0 (
+    echo %time% ready_start exe
+    start chrome.exe http://localhost:82/
+) else if %minute% GEQ 59 (
+    if %sec% GTR 48 (
+        echo %time% ready_kill exe
+        taskkill /F /IM chrome*
+    )
+)
+
+@REM 等待时间，单位：秒
+timeout /T 10
+goto loop_label
